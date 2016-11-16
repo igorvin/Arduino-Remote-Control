@@ -13,15 +13,12 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="Library">
-      <UniqueIdentifier>{ef7bd926-bb38-48e2-be53-8d70534140de}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Transmitter.ino" />
+    <None Include="Receiver.ino" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="__vm\.Transmitter.vsarduino.h">
+    <ClInclude Include="__vm\.Receiver.vsarduino.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
