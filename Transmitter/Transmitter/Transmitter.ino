@@ -4,7 +4,7 @@
 //*****
 
 //Include the necessary libraries
-#include <AnalogButtons.h>
+
 #include "CyberLib.h"
 
 #define START_CMD_CHAR '*'
@@ -12,7 +12,15 @@
 #define DIV_CMD_CHAR '|'
 #define CMD_DIGITALWRITE 10
 
-#define ANALOG_PIN A0
+//define where your pins are
+int latchPin = 8;
+int dataPin = 9;
+int clockPin = 7;
+#define casevalue
+
+byte switchVar1 = 72;  //01001000
+char note2sing[] = {
+	'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H' };
 
 
 // Set Trimmer Pin
@@ -27,70 +35,10 @@ int Trim3_val;
 //String inText;
 ////////////////////////////////////////////////
 
-void Key1Click()
-{
-	//Serial.print("button 1 clicked");
-	Serial.print(START_CMD_CHAR);
-	Serial.print(CMD_DIGITALWRITE);
-	Serial.print(DIV_CMD_CHAR);
-	Serial.print(1);
-	Serial.print("\t");
-}
-void Key2Click()
-{
-	Serial.print("button 2 clicked");
-}
-void Key2Hold()
-{
-	Serial.print("button 2 held");
-}
-
-void Key3Click()
-{
-	Serial.print("button 3 clicked");
-}
-void Key4Click()
-{
-	Serial.print("button 4 clicked");
-}
-
-void Key5Click()
-{
-	Serial.print("button 5 clicked");
-}
-
-void Key6Click()
-{
-	Serial.print("button 6 clicked");
-}
-
-void Key7Click()
-{
-	Serial.print("button 7 clicked");
-}
-
-void Key8Click()
-{
-	Serial.print("button 8 clicked");
-}
-
-void Key9Click()
-{
-	Serial.print("button 9 clicked");
-}
 
 
-//Button Activation 
-AnalogButtons analogButtons(ANALOG_PIN, 30);
-Button Key1 = Button(1017, &Key1Click);
-Button Key2 = Button(283, &Key2Click, Key2Hold);
-Button Key3 = Button(242, &Key3Click);
-Button Key4 = Button(201, &Key4Click);
-Button Key5 = Button(171, &Key5Click);
-Button Key6 = Button(141, &Key6Click);
-Button Key7 = Button(119, &Key7Click);
-Button Key8 = Button(91, &Key8Click);
-Button Key9 = Button(70, &Key9Click);
+
+
 
 
 
@@ -99,17 +47,10 @@ void setup() {
 	Serial.println("Arduino Transmitter Ver.0.1");
 //	Serial.flush();
 
-//Setup Analog Buttons
-	analogButtons.add(Key1);
-	analogButtons.add(Key2);
-	analogButtons.add(Key3);
-	analogButtons.add(Key4);
-	analogButtons.add(Key5);
-	analogButtons.add(Key6);
-	analogButtons.add(Key7);
-	analogButtons.add(Key8);
-	analogButtons.add(Key9);
-
+//define pin modes
+	pinMode(latchPin, OUTPUT);
+	pinMode(clockPin, OUTPUT);
+	pinMode(dataPin, INPUT);
 
 	//Set Pins
 
@@ -152,13 +93,81 @@ void setup() {
 
 void loop() {
 
-	//Check Analog buttons	
-	analogButtons.check();
+	digitalWrite(latchPin, 1);
+	delayMicroseconds(20);
+	digitalWrite(latchPin, 0);
+	switchVar1 = shiftIn(dataPin, clockPin);
+	//Serial.println(switchVar1, BIN);
+	for (int n = 0; n <= 7; n++)
+	{
+		if (switchVar1 & (1 << n)) {
+			//print the value of the array location
+			//Serial.println(note2sing[n]);
+			switch ((note2sing[n])) {
+			case 'A':    // your hand is on the sensor
+				Serial.println("Key1");
+				Serial.print(START_CMD_CHAR);
+				Serial.print(CMD_DIGITALWRITE);
+				Serial.print(DIV_CMD_CHAR);
+				Serial.print(1);
+				Serial.print("\t");
+				break;
+			case 'B':    // your hand is close to the sensor
+				Serial.println("Key2");
+				break;
+			case 'C':    // your hand is on the sensor
+				Serial.println("Key3");
+				break;
+			case 'D':    // your hand is close to the sensor
+				Serial.println("Key4");
+				break;
+			case 'E':    // your hand is close to the sensor
+				Serial.println("Key5");
+				break;
+			case 'F':    // your hand is close to the sensor
+				Serial.println("Key6");
+				break;
+			case 'G':    // your hand is close to the sensor
+				Serial.println("Key7");
+				break;
+			case 'H':    // your hand is close to the sensor
+				Serial.println("Key8");
+				break;
+			}
 
+
+		}
+	}
+	
 	
 	Trim1_val = analogRead(Trim1pin);
 	Trim1_val = map(Trim1_val, 0, 1023, 0, 179);
 //	Serial.print(Trim1_val);
 	//delay(250);
+
+	delay(300);
 }
 
+byte shiftIn(int myDataPin, int myClockPin) {
+	int i;
+	int temp = 0;
+	int pinState;
+	byte myDataIn = 0;
+	pinMode(myClockPin, OUTPUT);
+	pinMode(myDataPin, INPUT);
+	for (i = 7; i >= 0; i--)
+	{
+		digitalWrite(myClockPin, 0);
+		delayMicroseconds(0.2);
+		temp = digitalRead(myDataPin);
+		if (temp) {
+			pinState = 1;
+			myDataIn = myDataIn | (1 << i);
+		}
+		else {
+			pinState = 0;
+		}
+		digitalWrite(myClockPin, 1);
+	}
+	return myDataIn;
+}
