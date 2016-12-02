@@ -14,4 +14,6 @@ C:\Users\igorv\AppData\Local\Temp\VMicroBuilds\Transmitter\nano_atmega328\Transm
  C:\Program\ Files\ (x86)\Arduino\hardware\arduino\avr\variants\eightanaloginputs/../standard/pins_arduino.h \
  C:\Program\ Files\ (x86)\Arduino\libraries\CyberLib/CyberLib.h \
  C:\Program\ Files\ (x86)\Arduino\hardware\arduino\avr\cores\arduino/Arduino.h \
+ C:\Program\ Files\ (x86)\Arduino\hardware\arduino\avr\libraries\SoftwareSerial/SoftwareSerial.h \
+ C:\Program\ Files\ (x86)\Arduino\hardware\arduino\avr\cores\arduino/Stream.h \
  C:\Program\ Files\ (x86)\Microsoft\ Visual\ Studio\ 14.0\Common7\IDE\Extensions\smcrm4kv.utm\Micro\ Platforms\default\debuggers\VM_DBG/VM_DBG.h

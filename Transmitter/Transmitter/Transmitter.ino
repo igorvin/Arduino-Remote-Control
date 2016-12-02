@@ -6,6 +6,10 @@
 //Include the necessary libraries
 
 #include "CyberLib.h"
+#include <SoftwareSerial.h>
+
+SoftwareSerial RCSerial(2, 3); // RX, TX
+
 
 #define START_CMD_CHAR '*'
 #define END_CMD_CHAR '#'
@@ -20,7 +24,14 @@
 #define MAX_ANALOGWRITE 255
 
 long key1_Debounce_Time = 0;  // the last time the output pin was toggled
-long debounceDelay = 300;    // the debounce time; increase if the output flickers
+long key2_Debounce_Time = 0;  // the last time the output pin was toggled
+long key3_Debounce_Time = 0;  // the last time the output pin was toggled
+long key4_Debounce_Time = 0;  // the last time the output pin was toggled
+long key5_Debounce_Time = 0;  // the last time the output pin was toggled
+long key6_Debounce_Time = 0;  // the last time the output pin was toggled
+long key7_Debounce_Time = 0;  // the last time the output pin was toggled
+long key8_Debounce_Time = 0;  // the last time the output pin was toggled
+long debounceDelay = 400;    // the debounce time; increase if the output flickers
 
 
 //define where your pins are
@@ -51,9 +62,11 @@ String inText;
 
 
 void setup() {
+	RCSerial.begin(9600);
 	Serial.begin(9600);
 	Serial.println("Arduino Transmitter Ver.0.1");
-//	Serial.flush();
+	RCSerial.println("Connection Esteblished");
+	RCSerial.flush();
 
 //define pin modes
 	pinMode(latchPin, OUTPUT);
@@ -61,7 +74,7 @@ void setup() {
 	pinMode(dataPin, INPUT);
 
 	//Set Pins
-
+	
 	D2_Out;
 	D3_Out;
 	D4_Out;
@@ -113,50 +126,144 @@ void loop() {
 			//Serial.println(note2sing[n]);
 			switch ((note2sing[n])) {
 			case 'A':    // your hand is on the sensor
-				#ifdef DEBUG
-				//Serial.println("Key1");
-				// More debug code...
-				#endif
+				
 				if ((millis() - key1_Debounce_Time) > debounceDelay) {
-					Serial.print(START_CMD_CHAR);
-					Serial.print(CMD_DIGITALWRITE);
-					Serial.print(DIV_CMD_CHAR);
-					Serial.print(1);
-					Serial.print(END_CMD_CHAR);
-					Serial.print("\t");
+					RCSerial.println(START_CMD_CHAR);
+					RCSerial.println(CMD_DIGITALWRITE);
+					RCSerial.println(DIV_CMD_CHAR);
+					RCSerial.print(1);
+					RCSerial.println(END_CMD_CHAR);
+					RCSerial.println("\t");
+					//RCSerial.println("Sharon Stom");
 					key1_Debounce_Time = millis();
+					RCSerial.flush();
+					#ifdef DEBUG
+						Serial.println("Key1");
+					// More debug code...
+					#endif
 				}
 				break;
 			case 'B':    // your hand is close to the sensor
+					
+				if ((millis() - key2_Debounce_Time) > debounceDelay) {
+					RCSerial.println(START_CMD_CHAR);
+					RCSerial.println(CMD_DIGITALWRITE);
+					RCSerial.println(DIV_CMD_CHAR);
+					RCSerial.print(2);
+					RCSerial.println(END_CMD_CHAR);
+					RCSerial.println("\t");
+					//RCSerial.println("Sharon Stom");
+					key2_Debounce_Time = millis();
+					RCSerial.flush();
 					#ifdef DEBUG
-				//Serial.println("Key2");
-				// More debug code...
+					Serial.println("Key2");
+					// More debug code...
 					#endif
-				Serial.print(START_CMD_CHAR);
-				Serial.print(CMD_DIGITALWRITE);
-				Serial.print(DIV_CMD_CHAR);
-				Serial.print(2);
-				Serial.print(END_CMD_CHAR);
-				Serial.print("\t");
-				
+				}
 				break;
+			
 			case 'C':    // your hand is on the sensor
-				Serial.println("Key3");
+				if ((millis() - key3_Debounce_Time) > debounceDelay) {
+					RCSerial.println(START_CMD_CHAR);
+					RCSerial.println(CMD_DIGITALWRITE);
+					RCSerial.println(DIV_CMD_CHAR);
+					RCSerial.print(3);
+					RCSerial.println(END_CMD_CHAR);
+					RCSerial.println("\t");
+					//RCSerial.println("Sharon Stom");
+					key3_Debounce_Time = millis();
+					RCSerial.flush();
+						#ifdef DEBUG
+						Serial.println("Key3");
+					// More debug code...
+						#endif
+				}
 				break;
+			
 			case 'D':    // your hand is close to the sensor
-				Serial.println("Key4");
+				if ((millis() - key4_Debounce_Time) > debounceDelay) {
+					RCSerial.println(START_CMD_CHAR);
+					RCSerial.println(CMD_DIGITALWRITE);
+					RCSerial.println(DIV_CMD_CHAR);
+					RCSerial.print(4);
+					RCSerial.println(END_CMD_CHAR);
+					RCSerial.println("\t");
+					//RCSerial.println("Sharon Stom");
+					key4_Debounce_Time = millis();
+					RCSerial.flush();
+				#ifdef DEBUG
+					Serial.println("Key4");
+					// More debug code...
+				#endif
+				}
 				break;
 			case 'E':    // your hand is close to the sensor
-				Serial.println("Key5");
+				if ((millis() - key5_Debounce_Time) > debounceDelay) {
+					RCSerial.println(START_CMD_CHAR);
+					RCSerial.println(CMD_DIGITALWRITE);
+					RCSerial.println(DIV_CMD_CHAR);
+					RCSerial.print(5);
+					RCSerial.println(END_CMD_CHAR);
+					RCSerial.println("\t");
+					//RCSerial.println("Sharon Stom");
+					key5_Debounce_Time = millis();
+					RCSerial.flush();
+					#ifdef DEBUG
+					Serial.println("Key5");
+					// More debug code...
+					#endif
+				}
 				break;
 			case 'F':    // your hand is close to the sensor
-				Serial.println("Key6");
+				if ((millis() - key6_Debounce_Time) > debounceDelay) {
+					RCSerial.println(START_CMD_CHAR);
+					RCSerial.println(CMD_DIGITALWRITE);
+					RCSerial.println(DIV_CMD_CHAR);
+					RCSerial.print(6);
+					RCSerial.println(END_CMD_CHAR);
+					RCSerial.println("\t");
+					//RCSerial.println("Sharon Stom");
+					key6_Debounce_Time = millis();
+					RCSerial.flush();
+					#ifdef DEBUG
+					Serial.println("Key6");
+					// More debug code...
+					#endif
+				}
 				break;
 			case 'G':    // your hand is close to the sensor
-				Serial.println("Key7");
+				if ((millis() - key7_Debounce_Time) > debounceDelay) {
+					RCSerial.println(START_CMD_CHAR);
+					RCSerial.println(CMD_DIGITALWRITE);
+					RCSerial.println(DIV_CMD_CHAR);
+					RCSerial.print(7);
+					RCSerial.println(END_CMD_CHAR);
+					RCSerial.println("\t");
+					//RCSerial.println("Sharon Stom");
+					key7_Debounce_Time = millis();
+					RCSerial.flush();
+					#ifdef DEBUG
+					Serial.println("Key7");
+					// More debug code...
+					#endif
+				}
 				break;
 			case 'H':    // your hand is close to the sensor
-				Serial.println("Key8");
+				if ((millis() - key8_Debounce_Time) > debounceDelay) {
+					RCSerial.println(START_CMD_CHAR);
+					RCSerial.println(CMD_DIGITALWRITE);
+					RCSerial.println(DIV_CMD_CHAR);
+					RCSerial.print(8);
+					RCSerial.println(END_CMD_CHAR);
+					RCSerial.println("\t");
+					//RCSerial.println("Sharon Stom");
+					key8_Debounce_Time = millis();
+					RCSerial.flush();
+					#ifdef DEBUG
+					Serial.println("Key8");
+					// More debug code...
+					#endif
+				}
 				break;
 			}
 

@@ -8,6 +8,10 @@
 
 
 #include <Servo.h>
+#include <SoftwareSerial.h>
+#include "CyberLib.h"
+
+SoftwareSerial RCSerial(2, 3); // RX, TX
 
 #define START_CMD_CHAR '*'
 #define END_CMD_CHAR '#'
@@ -40,8 +44,43 @@ void setup() {
 	Servo1.attach(4);
 
 	Serial.begin(9600);
+	RCSerial.begin(9600);
 	Serial.println("ArduDroid Receiver 0.1");
 	Serial.flush();
+
+	D12_Out;
+	D11_Out;
+	D10_Out;
+	D9_Out;
+	D8_Out;
+	D7_Out;
+	D6_Out;
+	D5_Out;
+
+	D12_High;
+	delay_ms(500);
+	D12_Low;
+	D11_High;
+	delay_ms(500);
+	D11_Low;
+	D10_High;
+	delay_ms(500);
+	D10_Low;
+	D9_High;
+	delay_ms(500);
+	D9_Low;
+	D8_High;
+	delay_ms(500);
+	D8_Low;
+	D7_High;
+	delay_ms(500);
+	D7_Low;
+	D6_High;
+	delay_ms(500);
+	D6_Low;
+	D5_High;
+	delay_ms(500);
+	D5_Low;
 
 
 
@@ -59,23 +98,23 @@ void loop() {
 
 
 	// wait for incoming data
-	if (Serial.available() < 1) return; // if serial empty, return to loop().
+	if (RCSerial.available() < 1) return; // if serial empty, return to loop().
 
 // parse incoming command start flag 
-	get_char = Serial.read();
+	get_char = RCSerial.read();
 	if (get_char != START_CMD_CHAR) return; // if no command start flag, return to loop().
 
 // parse incoming command type
-	ard_command = Serial.parseInt(); // read the command
+	ard_command = RCSerial.parseInt(); // read the command
 // parse incoming pin# and value  
-	pin_num = Serial.parseInt(); // read the pin
-	pin_value = Serial.parseInt();  // read the value
+	pin_num = RCSerial.parseInt(); // read the pin
+	pin_value = RCSerial.parseInt();  // read the value
 
 // 1) GET TEXT COMMAND FROM ARDUDROID
 	if (ard_command == CMD_TEXT) {
 		inText = ""; //clears variable for new input   
-		while (Serial.available()) {
-			char c = Serial.read();  //gets one byte from serial buffer
+		while (RCSerial.available()) {
+			char c = RCSerial.read();  //gets one byte from serial buffer
 			delay(5);
 			if (c == END_CMD_CHAR) { // if we the complete string has been read
 									 // add your code here
