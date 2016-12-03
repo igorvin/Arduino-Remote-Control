@@ -22,6 +22,9 @@ SoftwareSerial RCSerial(2, 3); // RX, TX
 #define MIN_COMMAND 10  // minimum command number code. used for error checking. 
 #define IN_STRING_LENGHT 40
 #define MAX_ANALOGWRITE 255
+#define PIN_HIGH 3
+#define PIN_LOW 2
+
 
 long key1_Debounce_Time = 0;  // the last time the output pin was toggled
 long key2_Debounce_Time = 0;  // the last time the output pin was toggled
@@ -32,6 +35,17 @@ long key6_Debounce_Time = 0;  // the last time the output pin was toggled
 long key7_Debounce_Time = 0;  // the last time the output pin was toggled
 long key8_Debounce_Time = 0;  // the last time the output pin was toggled
 long debounceDelay = 400;    // the debounce time; increase if the output flickers
+
+//Keys Value
+int Key1_value = 0;
+int Key2_value = 0;
+int Key3_value = 0;
+int Key4_value = 0;
+int Key5_value = 0;
+int Key6_value = 0;
+int Key7_value = 0;
+int Key8_value = 0;
+
 
 
 //define where your pins are
@@ -132,6 +146,15 @@ void loop() {
 					RCSerial.println(CMD_DIGITALWRITE);
 					RCSerial.println(DIV_CMD_CHAR);
 					RCSerial.print(1);
+					RCSerial.println(DIV_CMD_CHAR);
+					if (Key1_value < 3) {
+						RCSerial.println(PIN_HIGH);
+						Key1_value = PIN_HIGH;
+					}
+					else {
+						RCSerial.println(PIN_LOW);
+						Key1_value = PIN_LOW;
+					}
 					RCSerial.println(END_CMD_CHAR);
 					RCSerial.println("\t");
 					//RCSerial.println("Sharon Stom");
@@ -150,6 +173,15 @@ void loop() {
 					RCSerial.println(CMD_DIGITALWRITE);
 					RCSerial.println(DIV_CMD_CHAR);
 					RCSerial.print(2);
+					RCSerial.println(DIV_CMD_CHAR);
+					if (Key2_value < 3) {
+						RCSerial.println(PIN_HIGH);
+						Key2_value = PIN_HIGH;
+					}
+					else {
+						RCSerial.println(PIN_LOW);
+						Key2_value = PIN_LOW;
+					}
 					RCSerial.println(END_CMD_CHAR);
 					RCSerial.println("\t");
 					//RCSerial.println("Sharon Stom");
@@ -168,6 +200,15 @@ void loop() {
 					RCSerial.println(CMD_DIGITALWRITE);
 					RCSerial.println(DIV_CMD_CHAR);
 					RCSerial.print(3);
+					RCSerial.println(DIV_CMD_CHAR);
+					if (Key3_value < 3) {
+						RCSerial.println(PIN_HIGH);
+						Key3_value = PIN_HIGH;
+					}
+					else {
+						RCSerial.println(PIN_LOW);
+						Key3_value = PIN_LOW;
+					}
 					RCSerial.println(END_CMD_CHAR);
 					RCSerial.println("\t");
 					//RCSerial.println("Sharon Stom");
@@ -186,6 +227,15 @@ void loop() {
 					RCSerial.println(CMD_DIGITALWRITE);
 					RCSerial.println(DIV_CMD_CHAR);
 					RCSerial.print(4);
+					RCSerial.println(DIV_CMD_CHAR);
+					if (Key4_value < 3) {
+						RCSerial.println(PIN_HIGH);
+						Key4_value = PIN_HIGH;
+					}
+					else {
+						RCSerial.println(PIN_LOW);
+						Key4_value = PIN_LOW;
+					}
 					RCSerial.println(END_CMD_CHAR);
 					RCSerial.println("\t");
 					//RCSerial.println("Sharon Stom");
@@ -203,6 +253,15 @@ void loop() {
 					RCSerial.println(CMD_DIGITALWRITE);
 					RCSerial.println(DIV_CMD_CHAR);
 					RCSerial.print(5);
+					RCSerial.println(DIV_CMD_CHAR);
+					if (Key5_value < 3) {
+						RCSerial.println(PIN_HIGH);
+						Key5_value = PIN_HIGH;
+					}
+					else {
+						RCSerial.println(PIN_LOW);
+						Key5_value = PIN_LOW;
+					}
 					RCSerial.println(END_CMD_CHAR);
 					RCSerial.println("\t");
 					//RCSerial.println("Sharon Stom");
@@ -220,6 +279,15 @@ void loop() {
 					RCSerial.println(CMD_DIGITALWRITE);
 					RCSerial.println(DIV_CMD_CHAR);
 					RCSerial.print(6);
+					RCSerial.println(DIV_CMD_CHAR);
+					if (Key6_value < 3) {
+						RCSerial.println(PIN_HIGH);
+						Key6_value = PIN_HIGH;
+					}
+					else {
+						RCSerial.println(PIN_LOW);
+						Key6_value = PIN_LOW;
+					}
 					RCSerial.println(END_CMD_CHAR);
 					RCSerial.println("\t");
 					//RCSerial.println("Sharon Stom");
@@ -237,6 +305,15 @@ void loop() {
 					RCSerial.println(CMD_DIGITALWRITE);
 					RCSerial.println(DIV_CMD_CHAR);
 					RCSerial.print(7);
+					RCSerial.println(DIV_CMD_CHAR);
+					if (Key7_value < 3) {
+						RCSerial.println(PIN_HIGH);
+						Key7_value = PIN_HIGH;
+					}
+					else {
+						RCSerial.println(PIN_LOW);
+						Key7_value = PIN_LOW;
+					}
 					RCSerial.println(END_CMD_CHAR);
 					RCSerial.println("\t");
 					//RCSerial.println("Sharon Stom");
@@ -254,6 +331,15 @@ void loop() {
 					RCSerial.println(CMD_DIGITALWRITE);
 					RCSerial.println(DIV_CMD_CHAR);
 					RCSerial.print(8);
+					RCSerial.println(DIV_CMD_CHAR);
+					if (Key8_value < 3) {
+						RCSerial.println(PIN_HIGH);
+						Key8_value = PIN_HIGH;
+					}
+					else {
+						RCSerial.println(PIN_LOW);
+						Key8_value = PIN_LOW;
+					}
 					RCSerial.println(END_CMD_CHAR);
 					RCSerial.println("\t");
 					//RCSerial.println("Sharon Stom");
