@@ -58,7 +58,7 @@ void loop() {
 	char get_char = ' ';  //read serial
 
 
-	// wait for incoming data
+// wait for incoming data
 	if (Serial.available() < 1) return; // if serial empty, return to loop().
 
 // parse incoming command start flag 
