@@ -81,9 +81,6 @@ void setup() {
 	//D5_High;
 	//delay_ms(500);
 	//D5_Low;
-
-
-
 }
 
 // the loop function runs over and over again until power down or reset
@@ -95,7 +92,12 @@ void loop() {
 	char get_char = ' ';  //read serial
 
 
+ // <<<<<<< HEAD
 	if (RCSerial.available() > 1) {
+//=======
+// wait for incoming data
+	if (Serial.available() < 1) return; // if serial empty, return to loop().
+//>>>>>>> origin/master
 
 		String input = RCSerial.readString();//read string
 		Serial.println(input);
@@ -104,7 +106,7 @@ void loop() {
 	}
 	if (RCSerial.available() < 1) return; // if serial empty, return to loop().
 
-										  // parse incoming command start flag 
+ // parse incoming command start flag 
 	get_char = RCSerial.read();
 	if (get_char != START_CMD_CHAR) return; // if no command start flag, return to loop().
 

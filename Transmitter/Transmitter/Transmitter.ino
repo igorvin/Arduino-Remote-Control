@@ -1,6 +1,6 @@
 //********************************************
-//*
-//* Battary and OLED Monitor http://ndogo.sodaq.net/using_-an_oled_screen_to_display_the_battery_voltage_reading/
+//* Created by Igor Vinokur
+//* Email: igorvin2@gmail.com
 //*****
 
 //Include the necessary libraries
@@ -370,18 +370,17 @@ void loop() {
 	int ard_command = 0;
 	int pin_num = 0;
 	int pin_value = 0;
-
 	char get_char = ' ';  //read serial
 
-						  // wait for incoming data
+// wait for incoming data
 	if (Serial.available() < 1) return; // if serial empty, return to loop().
 
-										// parse incoming command start flag 
+// parse incoming command start flag 
 	get_char = Serial.read();
 	#ifdef DEBUG
 			Serial.println("get_char: ");
 			Serial.println(get_char);
-	// More debug code...
+// More debug code...
 	#endif
 	if (get_char != START_CMD_CHAR) return; // if no command start flag, return to loop().
 
