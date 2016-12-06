@@ -1,7 +1,8 @@
 /*
 Name:    Receiver.ino
 Created: 16/11/2016 8:26:38 AM
-Author:  igorv
+Author:  Igor Vinokur
+Email: Igorvin2@gmail.com
 Libraries:
 https://github.com/pythonista/CyberLib
 */
