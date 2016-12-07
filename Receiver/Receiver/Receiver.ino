@@ -81,30 +81,7 @@ void setup() {
 	//D6_Out;
 	//D5_Out;
 
-	//D12_High;
-	//delay_ms(500);
-	//D12_Low;
-	//D11_High;
-	//delay_ms(500);
-	//D11_Low;
-	//D10_High;
-	//delay_ms(500);
-	//D10_Low;
-	//D9_High;
-	//delay_ms(500);
-	//D9_Low;
-	//D8_High;
-	//delay_ms(500);
-	//D8_Low;
-	//D7_High;
-	//delay_ms(500);
-	//D7_Low;
-	//D6_High;
-	//delay_ms(500);
-	//D6_Low;
-	//D5_High;
-	//delay_ms(500);
-	//D5_Low;
+	
 }
 
 // the loop function runs over and over again until power down or reset

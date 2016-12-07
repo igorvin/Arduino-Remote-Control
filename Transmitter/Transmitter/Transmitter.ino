@@ -334,6 +334,13 @@ void loop() {
 		MyData.key = 1;
 		MyData.val = Trim1_val;
 		Trim1_val_status = Trim1_val;
+
+		EEPROM.get(0, count);                          // Get from EEPROM int 
+		count--;                                       // take away 1
+		MyData.enc = k.encrypt(count);                   // Encrypting data 
+		ET.sendData();                                 // Send Data 
+		EEPROM.put(0, count);
+
 	}
 
 	}
