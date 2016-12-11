@@ -1,11 +1,11 @@
-﻿/*
-Name:    Receiver.ino
-Created: 16/11/2016 8:26:38 AM
-Author:  Igor Vinokur
-Email: Igorvin2@gmail.comSec, I'm checking
-Libraries:
-https://github.com/pythonista/CyberLib
-*/
+﻿//*
+//Name:    Receiver.ino
+//Created: 16/11/2016 8:26:38 AM
+//Author:  Igor Vinokur
+//Email: Igorvin2@gmail.comSec, I'm checking
+//Libraries:
+//https://github.com/pythonista/CyberLib
+//*/
 
 #include <EEPROM.h>
 #include <Servo.h>
@@ -93,6 +93,7 @@ void loop() {
 	
 
 	if (ET.receiveData()) {                      // если пришел пакет   
+    
 		if (RXData.id = 1) {                       // и совпал id
 			EEPROM.get(0, oldCount);               // достаем из EEPROM счетчик
 			count = k.decrypt(RXData.enc);           // декодируем 
@@ -104,6 +105,8 @@ void loop() {
 			}
 			else Serial.println("ALARM!!! Received Wrong Data");            // received previus packet
 		}
+		
+
 
 		// 2) GET digitalWrite DATA FROM ARDUDROID
 		if (RXData.type == CMD_DIGIO) {
