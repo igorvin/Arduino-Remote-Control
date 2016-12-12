@@ -118,6 +118,7 @@ void loop() {
 		if (switchVar1 & (1 << n)) {
 			//print the value of the array location
 			//Serial.println(note2sing[n]);
+			Serial.println(switchVar1, BIN);
 			switch ((note2sing[n])) {
 			case 'A':    // your hand is on the sensor
 				if ((millis() - key1_Debounce_Time) > debounceDelay) {
