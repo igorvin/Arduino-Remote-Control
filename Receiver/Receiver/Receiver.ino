@@ -49,6 +49,7 @@ RECEIVE_DATA RXData;
 #define PIN_HIGH 3
 #define PIN_LOW 2
 
+#define DEBUG 1
 String inText;
 
 
@@ -100,10 +101,10 @@ void loop() {
 			if (count <= oldCount) {                // если счетчик больше или равен сохраненного        
 				count--;                             // отнимаем 1
 				EEPROM.put(0, count);                // пишим в еепром
-				Serial.println("Data Recived is correct!!!!");
+				//Serial.println("Data Recived is correct!!!!");
 
 			}
-			else Serial.println("ALARM!!! Received Wrong Data");            // received previus packet
+			//else Serial.println("ALARM!!! Received Wrong Data");            // received previus packet
 		}
 		
 
@@ -132,41 +133,65 @@ void set_digitalwrite(int pin_num, int pin_value)
 {
 	switch (RXData.key) {
 	case 1:
+		#ifdef DEBUG
+			Serial.println("Key1 detected");
+		#endif
 		pinMode(12, OUTPUT);
 		digitalWrite(12, pin_value);
 		// add your code here      
 		break;
 	case 2:
+		#ifdef DEBUG
+			Serial.println("Key2 detected");
+		#endif
 		pinMode(11, OUTPUT);
 		digitalWrite(11, pin_value);
 		// add your code here       
 		break;
 	case 3:
+		#ifdef DEBUG
+			Serial.println("Key3 detected");
+		#endif
 		pinMode(10, OUTPUT);
 		digitalWrite(10, pin_value);
 		// add your code here 
 		break;
 	case 4:
+		#ifdef DEBUG
+			Serial.println("Key4 detected");
+		#endif
 		pinMode(9, OUTPUT);
 		digitalWrite(9, pin_value);
 		// add your code here 
 		break;
 	case 5:
+		#ifdef DEBUG
+			Serial.println("Key5 detected");
+		#endif
 		pinMode(8, OUTPUT);
 		digitalWrite(8, pin_value);
 		// add your code here 
 		break;
 	case 6:
+		#ifdef DEBUG
+			Serial.println("Key6 detected");
+		#endif
 		pinMode(7, OUTPUT);
 		digitalWrite(7, pin_value);
 		// add your code here 
 		break;
 	case 7:
+		#ifdef DEBUG
+			Serial.println("Key7 detected");
+		#endif
 		pinMode(6, OUTPUT);
 		digitalWrite(6, pin_value);
 		// add your code here 
 		break;
 	case 8:
+		#ifdef DEBUG
+			Serial.println("Key8 detected");
+		#endif
 		pinMode(5, OUTPUT);
 		digitalWrite(5, pin_value);
 		// add your code here 
