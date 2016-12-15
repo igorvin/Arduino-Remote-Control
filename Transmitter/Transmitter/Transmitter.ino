@@ -8,26 +8,48 @@
 #include <EEPROM.h>
 #include <SoftwareSerial.h>
 #include <Keeloq.h>
-#include <SoftEasyTransfer.h>
+#include <EasyTransfer.h>
+#include <Wire.h>
+#include <Adafruit_INA219.h>
+#include <Adafruit_SSD1306.h>
 
 SoftwareSerial RCSerial(2, 3); // RX, TX
 
+
+//Set Display 
+#define OLED_RESET 4
+Adafruit_SSD1306 display(OLED_RESET);
+Adafruit_INA219 ina219;
+
 Keeloq k(0x01325324, 0x05064718);        /// Encryption Key
-unsigned int count = 65535;
+unsigned int count = 65535;		//ID sent to Receiver
+unsigned int oldcountRX = 75535;  //ID Received from Receiver
+unsigned int countRX;  //ID 
+unsigned int oldcount;
+EasyTransfer ETin, ETout;
 
-SoftEasyTransfer ET;
-
-struct SEND_DATA {
+struct SEND_DATA_STRUCTURE {
 	unsigned long enc;                    // Counter 
-	byte id = 1;
-	int pin = 0;                          // Pin number 
-	int type = 0;							// Analog/Digital/Text
-	int val = 0;                         // Pin Value 
-	int cmd = 0;
-	int key = 0;
+	byte id = 1; //Sent ID
+	byte keysStat = 0;
+	byte AnalogStat1 = 0;
+	byte AnalogStat2 = 0;
+	byte AnalogStat3 = 0;
+
 };
 
-SEND_DATA MyData;
+struct RECEIVE_DATA_STRUCTURE {
+	unsigned long enc;
+	byte id = 0;
+	int outState = 0;
+	int batV = 0;	//Battary Volt
+	int batA = 0;	//Battary Amper
+	int commstat = 0;
+};
+
+
+SEND_DATA_STRUCTURE MyData;
+RECEIVE_DATA_STRUCTURE RXData;
 
 #define CMD_DIGIO 10
 #define CMD_ANALOGIO 11
@@ -35,16 +57,11 @@ SEND_DATA MyData;
 #define PIN_HIGH 3
 #define PIN_LOW 2
 
-long key1_Debounce_Time = 0;  // the last time the output pin was toggled
-long key2_Debounce_Time = 0;  // the last time the output pin was toggled
-long key3_Debounce_Time = 0;  // the last time the output pin was toggled
-long key4_Debounce_Time = 0;  // the last time the output pin was toggled
-long key5_Debounce_Time = 0;  // the last time the output pin was toggled
-long key6_Debounce_Time = 0;  // the last time the output pin was toggled
-long key7_Debounce_Time = 0;  // the last time the output pin was toggled
-long key8_Debounce_Time = 0;  // the last time the output pin was toggled
-long debounceDelay = 400;    // the debounce time; increase if the output flickers
+byte olddigcmd = 0; // Old Digital keys command status
 
+
+long debounceDelay = 400;    // the debounce time; increase if the output flickers
+long key_Debounce_Time[] = { 0,0,0,0,0,0,0,0 };
 //Keys Value
 int Key1_value = 0;
 int Key2_value = 0;
@@ -95,18 +112,37 @@ void setup() {
 	RCSerial.begin(9600);
 	Serial.begin(9600);
 	Serial.println("Arduino Transmitter Ver.0.1");
-	
 	RCSerial.flush();
 
-	ET.begin(details(MyData), &RCSerial);
+	ETout.begin(details(MyData), &RCSerial);
+	ETin.begin(details(RXData), &RCSerial);
 
 	//define pin modes
 	pinMode(latchPin, OUTPUT);
 	pinMode(clockPin, OUTPUT);
 	pinMode(dataPin, INPUT);
+	EEPROM.put(5, 32763);
+	display.begin(SSD1306_SWITCHCAPVCC, 0x3C); //Initial Display
 }
 
 void loop() {
+
+	if (ETin.receiveData()) {                      // если пришел пакет   
+		Serial.println("ID: "); Serial.println(RXData.id);
+		if (RXData.id == 2) {                       // и совпал id
+			EEPROM.get(5, oldcountRX);               // достаем из EEPROM счетчик
+			Serial.println("oldcountRX: "); Serial.println(oldcountRX);
+			countRX = k.decrypt(RXData.enc);           // декодируем 
+			Serial.println("countRX: "); Serial.println(countRX);
+			if (countRX >= oldcountRX) {                // если счетчик больше или равен сохраненного        
+				countRX--;                             // отнимаем 1
+				EEPROM.put(5, countRX);                // пишим в еепром
+				Serial.println("Data Recived is correct!!!!");
+
+			}
+			else Serial.println("ALARM!!! Received Wrong Data");            // received previus packet
+		}
+	}
 
 	digitalWrite(latchPin, 1);
 	delayMicroseconds(20);
@@ -118,193 +154,37 @@ void loop() {
 		if (switchVar1 & (1 << n)) {
 			//print the value of the array location
 			//Serial.println(note2sing[n]);
-			Serial.println(switchVar1, BIN);
-			switch ((note2sing[n])) {
-			case 'A':    // your hand is on the sensor
-				if ((millis() - key1_Debounce_Time) > debounceDelay) {
-					#ifdef DEBUG
-					Serial.println("Key1");
-					// More debug code...
-					#endif
-					MyData.type = CMD_DIGIO;
-					MyData.key = 1;
-
-					if (Key1_value < PIN_HIGH) {
-						MyData.val = PIN_HIGH;
-						Key1_value = PIN_HIGH;
-					}
-					else {
-						MyData.val = PIN_LOW;
-						Key1_value = PIN_LOW;
-					}
-
-					key1_Debounce_Time = millis();
-
-				}
-				break;
-			case 'B':    // your hand is close to the sensor
-
-				if ((millis() - key2_Debounce_Time) > debounceDelay) {
-					#ifdef DEBUG
-					Serial.println("Key2");
-					// More debug code...
-					#endif
-					MyData.type = CMD_DIGIO;
-					MyData.key = 2;
-
-					if (Key2_value < PIN_HIGH) {
-						MyData.val = PIN_HIGH;
-						Key2_value = PIN_HIGH;
-					}
-					else {
-						MyData.val = PIN_LOW;
-						Key2_value = PIN_LOW;
-					}
-
-					key2_Debounce_Time = millis();
-
-
-				}
-				break;
-
-			case 'C':    // your hand is on the sensor
-				if ((millis() - key3_Debounce_Time) > debounceDelay) {
-					#ifdef DEBUG
-					Serial.println("Key3");
-					// More debug code...
-					#endif
-					MyData.type = CMD_DIGIO;
-					MyData.key = 3;
-
-					if (Key3_value < PIN_HIGH) {
-						MyData.val = PIN_HIGH;
-						Key3_value = PIN_HIGH;
-					}
-					else {
-						MyData.val = PIN_LOW;
-						Key3_value = PIN_LOW;
-					}
-
-					key3_Debounce_Time = millis();
-
-
-				}
-				break;
-
-			case 'D':    // your hand is close to the sensor
-				if ((millis() - key4_Debounce_Time) > debounceDelay) {
-					#ifdef DEBUG
-					Serial.println("Key4");
-					// More debug code...
-					#endif
-					
-					MyData.type = CMD_DIGIO;
-					MyData.key = 4;
-
-					if (Key4_value < PIN_HIGH) {
-						MyData.val = PIN_HIGH;
-						Key4_value = PIN_HIGH;
-					}
-					else {
-						MyData.val = PIN_LOW;
-						Key4_value = PIN_LOW;
-					}
-
-					key4_Debounce_Time = millis();
-
-				}
-				break;
-			case 'E':    // your hand is close to the sensor
-				if ((millis() - key5_Debounce_Time) > debounceDelay) {
-					#ifdef DEBUG
-					Serial.println("Key5");
-					// More debug code...
-					#endif
-					MyData.type = CMD_DIGIO;
-					MyData.key = 5;
-
-					if (Key5_value < PIN_HIGH) {
-						MyData.val = PIN_HIGH;
-						Key5_value = PIN_HIGH;
-					}
-					else {
-						MyData.val = PIN_LOW;
-						Key5_value = PIN_LOW;
-					}
-
-					key5_Debounce_Time = millis();
-
-				}
-				break;
-			case 'F':    // your hand is close to the sensor
-				if ((millis() - key6_Debounce_Time) > debounceDelay) {
-					#ifdef DEBUG
-					Serial.println("Key6");
-					// More debug code...
-					#endif
-					MyData.type = CMD_DIGIO;
-					MyData.key = 6;
-
-					if (Key6_value < PIN_HIGH) {
-						MyData.val = PIN_HIGH;
-						Key6_value = PIN_HIGH;
-					}
-					else {
-						MyData.val = PIN_LOW;
-						Key6_value = PIN_LOW;
-					}
-
-					key6_Debounce_Time = millis();
-
-				}
-				break;
-			case 'G':    // your hand is close to the sensor
-				if ((millis() - key7_Debounce_Time) > debounceDelay) {
+				
+			if ((millis() - key_Debounce_Time[n]) > debounceDelay) {
 				#ifdef DEBUG
-					Serial.println("Key7");
-					// More debug code...
-					#endif
-					MyData.type = CMD_DIGIO;
-					MyData.key = 7;
+				Serial.println("Key");
+				Serial.println(n);
+				#endif
+				// More debug code...
+				Serial.println("Input command");
+				Serial.println(switchVar1, BIN);
+				//Togle for status
+				MyData.keysStat ^= 1 << n;
+				Serial.println("Status");
+				Serial.println(MyData.keysStat, BIN);
+				key_Debounce_Time[n] = millis();
+							}
+						}
+			
+		
 
-					if (Key7_value < PIN_HIGH) {
-						MyData.val = PIN_HIGH;
-						Key7_value = PIN_HIGH;
-					}
-					else {
-						MyData.val = PIN_LOW;
-						Key7_value = PIN_LOW;
-					}
-
-					key7_Debounce_Time = millis();
-					
-				}
-				break;
-			case 'H':    // your hand is close to the sensor
-				if ((millis() - key8_Debounce_Time) > debounceDelay) {
-					#ifdef DEBUG
-					Serial.println("Key8");
-					// More debug code...
-					#endif
-					MyData.type = CMD_DIGIO;
-					MyData.key = 8;
-
-					if (Key8_value < PIN_HIGH) {
-						MyData.val = PIN_HIGH;
-						Key8_value = PIN_HIGH;
-					}
-					else {
-						MyData.val = PIN_LOW;
-						Key8_value = PIN_LOW;
-					}
-
-					key8_Debounce_Time = millis();
-
-				}
-				break;
-			}
-			SendData(); //Send Data to Remote unit
+			displaydata();
 		}
+	//}
+	
+	if ((olddigcmd != MyData.keysStat) | (RXData.outState != MyData.keysStat))
+	{
+		Serial.print("OLDCommand"); Serial.println(olddigcmd, BIN);
+		Serial.print("MyData.keystatus"); Serial.println(MyData.keysStat, BIN);
+		Serial.print("RXData.outState"); Serial.println(RXData.outState, BIN);
+
+		SendData(); //Send Data to Remote unit
+		olddigcmd = MyData.keysStat;
 	}
 
 	//Read Analog Data
@@ -316,42 +196,38 @@ void loop() {
 	Trim3_val = map(Trim3_val, 0, 1023, 0, 179);
 	
 	if (Trim1_val != Trim1_val_status) {
-		MyData.type = CMD_ANALOGIO;
-		MyData.key = 1;
-		MyData.val = Trim1_val;
+		MyData.AnalogStat1 = Trim1_val;
 		Trim1_val_status = Trim1_val;
 
-		SendData(); //Send Data to Remote unit
-	}
+			}
 	if (Trim2_val != Trim2_val_status) {
-		MyData.type = CMD_ANALOGIO;
-		MyData.key = 2;
-		MyData.val = Trim2_val;
-		Trim1_val_status = Trim1_val;
+		MyData.AnalogStat2 = Trim2_val;
+		Trim1_val_status = Trim2_val;
 
-		SendData(); //Send Data to Remote unit
-	}
+			}
 	if (Trim3_val != Trim3_val_status) {
-		MyData.type = CMD_ANALOGIO;
-		MyData.key = 3;
-		MyData.val = Trim3_val;
+		MyData.AnalogStat3 = Trim3_val;
 		Trim3_val_status = Trim3_val;
 
-		SendData(); //Send Data to Remote unit
+		
 	}
 	}
 
 	void SendData() {
+		
 		//Serial.println(MyData.type);
 		EEPROM.get(0, count);                          // Get from EEPROM int 
-		count--;                                       // take away 1
+		count--; 		// take away 1
+		Serial.println("Count ID:"); Serial.println(count);
+
 		MyData.enc = k.encrypt(count);                   // Encrypting data 
-		ET.sendData();                                 // Send Data 
-		EEPROM.put(0, count);                          // Save int to EEPROM
+		ETout.sendData();                                 // Send Data 
+		EEPROM.put(0, count);
+		Serial.println("Count from EPROM:"); Serial.println(EEPROM.get(0, oldcount));
+		                          // Save int to EEPROM
+		//Serial.println(millis());
 	}
-
-
-
+	
 byte shiftIn(int myDataPin, int myClockPin) {
 	int i;
 	int temp = 0;
@@ -374,4 +250,22 @@ byte shiftIn(int myDataPin, int myClockPin) {
 		digitalWrite(myClockPin, 1);
 	}
 	return myDataIn;
+}
+
+void displaydata() {
+	display.clearDisplay();
+	display.setTextColor(WHITE);
+	display.setTextSize(1.1);
+	display.setCursor(0, 0);
+	display.println("Communication:");
+	display.setCursor(95, 0);
+	display.println("OK");
+	//display.setCursor(0, 10);
+	//display.setCursor(65, 10);
+	//display.println("mW");
+	//display.setCursor(0, 20);
+	//display.println(energy);
+	//display.setCursor(65, 20);
+	//display.println("mWh");
+	display.display();
 }
