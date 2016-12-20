@@ -70,8 +70,8 @@ void setup() {
 for (int index = 0; index <= 7; index++) { pinMode(ledPins[index], OUTPUT);} // Define GPIO to OUTPUT mode
 	
 	//Set Servo pin
-	//Servo1.attach(2);
-	//Servo2.attach(3);
+	Servo1.attach(13);
+	Servo2.attach(4);
 	//Servo3.attach(4);
 		
 	Serial.begin(9600);
