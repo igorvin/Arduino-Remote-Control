@@ -102,7 +102,7 @@ void setup() {
 	pinMode(clockPin, OUTPUT);
 	pinMode(dataPin, INPUT);
 	//EEPROM.put(5, 32763); // Atantion!!!! Only if need reset ID
-	EEPROM.get(10, olddigcmd);
+	EEPROM.get(10, MyData.keysStat);
 	display.begin(SSD1306_SWITCHCAPVCC, 0x3C); //Initial Display
 }
 
