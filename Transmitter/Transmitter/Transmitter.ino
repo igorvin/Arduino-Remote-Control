@@ -34,31 +34,31 @@ struct SEND_DATA_STRUCTURE {
 	byte keysStat = 0;
 	byte AnalogStat1 = 0;
 	byte AnalogStat2 = 0;
-	byte AnalogStat3 = 0;
+	//byte AnalogStat3 = 0;
 
 };
 
 struct RECEIVE_DATA_STRUCTURE {
 	unsigned long enc;
 	byte id = 0;
-	int outState = 0;
+	int outStat = 0;
 	int batV = 0;	//Battary Volt
 	int batA = 0;	//Battary Amper
 	byte commstat = 0;
 };
 
-SEND_DATA_STRUCTURE MyData;
+SEND_DATA_STRUCTURE TXData;
 RECEIVE_DATA_STRUCTURE RXData;
 
 byte olddigcmd = 0; // Old Digital keys command status
 
-long debounceDelay = 400;    // the debounce time; increase if the output flickers
+long debounceDelay = 300;    // the debounce time; increase if the output flickers
 long key_Debounce_Time[] = { 0,0,0,0,0,0,0,0 };
 
 //define where your pins are
-int latchPin = 8;
-int dataPin = 9;
-int clockPin = 7;
+int latchPin = 5; //was 8
+int dataPin = 6; //was9
+int clockPin = 4; //was 7
 
 #define casevalue
 #define CommOK 55 //Communication code status
@@ -94,7 +94,7 @@ void setup() {
 	Serial.println("Arduino Transmitter Ver.0.1");
 	RCSerial.flush();
 
-	ETout.begin(details(MyData), &RCSerial);
+	ETout.begin(details(TXData), &RCSerial);
 	ETin.begin(details(RXData), &RCSerial);
 
 	//define pin modes
@@ -102,20 +102,21 @@ void setup() {
 	pinMode(clockPin, OUTPUT);
 	pinMode(dataPin, INPUT);
 	//EEPROM.put(5, 32763); // Atantion!!!! Only if need reset ID
-	EEPROM.get(10, MyData.keysStat);
+	EEPROM.get(10, TXData.keysStat);
 	display.begin(SSD1306_SWITCHCAPVCC, 0x3C); //Initial Display
 }
 
 void loop() {
-	delay(200);
+	//delay(200);
 	if (ETin.receiveData()) {                      // если пришел пакет   
-		Serial.println("ID: "); Serial.println(RXData.id);
+		Serial.println("Data Received!!!, ID: "); Serial.println(RXData.id);
 		if (RXData.id == 2) {                       // и совпал id
+			Serial.println("ID Received OK!!! ");
 			EEPROM.get(5, oldcountRX);               // достаем из EEPROM счетчик
 			countRX = k.decrypt(RXData.enc);           // декодируем 
 #ifdef DEBUG
-			Serial.println("oldcountRX: "); Serial.println(oldcountRX);
-			Serial.println("countRX: "); Serial.println(countRX);
+		//	Serial.println("oldcountRX: "); Serial.println(oldcountRX);
+		//	Serial.println("countRX: "); Serial.println(countRX);
 #endif
 			if (countRX >= oldcountRX) {                // если счетчик больше или равен сохраненного        
 				countRX--;                             // отнимаем 1
@@ -135,21 +136,14 @@ void loop() {
 	for (int n = 0; n <= 7; n++)
 	{
 		if (switchVar1 & (1 << n)) {
-			//print the value of the array location
-			//Serial.println(note2sing[n]);
-				
+							
 			if ((millis() - key_Debounce_Time[n]) > debounceDelay) {
-				#ifdef DEBUG
+#ifdef DEBUG
 				//Serial.println("Key");
 				//Serial.println(n);
-				#endif
-				// More debug code...
-				//Serial.println("Input command");
-				//Serial.println(switchVar1, BIN);
-				//Togle for status
-				MyData.keysStat ^= 1 << n;
-				//Serial.println("Status");
-				//Serial.println(MyData.keysStat, BIN);
+#endif
+		//Togle for status
+				TXData.keysStat ^= 1 << n;
 				key_Debounce_Time[n] = millis();
 							}
 						}
@@ -157,34 +151,37 @@ void loop() {
 		}
 	//Read Analog Data
 	Trim1_val = analogRead(Trim1pin);
-	MyData.AnalogStat1 = map(Trim1_val, 0, 1023, 0, 179);
+	TXData.AnalogStat1 = map(Trim1_val, 0, 1023, 0, 179);
 	Trim2_val = analogRead(Trim2pin);
-	MyData.AnalogStat2 = map(Trim2_val, 0, 1023, 0, 179);
-	//Trim3_val = analogRead(Trim3pin);
-	//MyData.AnalogStat3 = map(Trim3_val, 0, 1023, 0, 179);
+	TXData.AnalogStat2 = map(Trim2_val, 0, 1023, 0, 179);
 	
-	if ((olddigcmd != MyData.keysStat) | (MyData.AnalogStat1 != Trim1_val_status) | (MyData.AnalogStat2 != Trim2_val_status))
+	if ((olddigcmd != TXData.keysStat)) // || (TXData.AnalogStat1 != Trim1_val_status) || (TXData.AnalogStat2 != Trim2_val_status))
 	{
 		Serial.print("OLDCommand"); Serial.println(olddigcmd, BIN);
-		Serial.print("MyData.keystatus"); Serial.println(MyData.keysStat, BIN);
-		Serial.print("RXData.outState"); Serial.println(RXData.outState, BIN);
+		Serial.print("TXData.keystatus"); Serial.println(TXData.keysStat, BIN);
+		//Serial.print("RXData.outState"); Serial.println(RXData.outState, BIN);
+
+		if (RXData.commstat == CommOK)
+			commstat = 'OK';
+		else  commstat = 'Err';
+
 
 		SendData(); //Send Data to Remote unit
-		olddigcmd = MyData.keysStat;
-		EEPROM.put(10, MyData.keysStat);
-		MyData.AnalogStat1 = Trim1_val_status;
-		MyData.AnalogStat2 = Trim2_val_status;
-//		MyData.AnalogStat3 = Trim3_val_status;
+		olddigcmd = TXData.keysStat;
+		EEPROM.put(10, TXData.keysStat);
+		TXData.AnalogStat1 = Trim1_val_status;
+		TXData.AnalogStat2 = Trim2_val_status;
+
 	}
 
 	}
 
 	void SendData() {	
-		//Serial.println(MyData.type);
+		//Serial.println(TXData.type);
 		EEPROM.get(0, count);                          // Get from EEPROM int 
 		count--; 		// take away 1
 		//Serial.println("Count ID:"); Serial.println(count);
-		MyData.enc = k.encrypt(count);                   // Encrypting data 
+		TXData.enc = k.encrypt(count);                   // Encrypting data 
 		ETout.sendData();                                 // Send Data 
 		EEPROM.put(0, count);
 		//Serial.println("Count from EPROM:"); Serial.println(EEPROM.get(0, oldcount));
@@ -192,34 +189,32 @@ void loop() {
 		//Serial.println(millis());
 	}
 	
-byte shiftIn(int myDataPin, int myClockPin) {
+byte shiftIn(int TXDataPin, int myClockPin) {
 	int i;
 	int temp = 0;
 	int pinState;
-	byte myDataIn = 0;
+	byte TXDataIn = 0;
 	pinMode(myClockPin, OUTPUT);
-	pinMode(myDataPin, INPUT);
+	pinMode(TXDataPin, INPUT);
 	for (i = 7; i >= 0; i--)
 	{
 		digitalWrite(myClockPin, 0);
 		delayMicroseconds(0.2);
-		temp = digitalRead(myDataPin);
+		temp = digitalRead(TXDataPin);
 		if (temp) {
 			pinState = 1;
-			myDataIn = myDataIn | (1 << i);
+			TXDataIn = TXDataIn | (1 << i);
 		}
 		else {
 			pinState = 0;
 		}
 		digitalWrite(myClockPin, 1);
 	}
-	return myDataIn;
+	return TXDataIn;
 }
 
 void displaydata() {
-	if (RXData.commstat == CommOK)
-		commstat = 'OK';
-	else  commstat = 'Err';
+	
 	display.clearDisplay();
 	display.setTextColor(WHITE);
 	display.setTextSize(1.1);
