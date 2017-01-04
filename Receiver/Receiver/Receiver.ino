@@ -1,11 +1,11 @@
-﻿//*
+﻿/*
 //Name:    Receiver.ino
 //Created: 16/11/2016 8:26:38 AM
 //Author:  Igor Vinokur
-//Email: Igorvin2@gmail.comSec, I'm checking
-//Libraries:
-//https://github.com/pythonista/CyberLib
-//*/
+//Email: Igorvin2@gmail.com
+//Libraries: 
+	//EEPROM; Servo; SoftwareSerial; Keeloq; EasyTransfer
+*/
 
 #include <EEPROM.h>
 #include <Servo.h>
@@ -30,7 +30,6 @@ struct RECEIVE_DATA_STRUCTURE {
 	byte AnalogStat2 = 0;	//Analog Trimmer value
 	//byte AnalogStat3 = 0;	//Analog Trimmer value
 };
-
 struct SEND_DATA_STRUCTURE {
 	unsigned long enc;
 	byte id = 0;
@@ -40,9 +39,10 @@ struct SEND_DATA_STRUCTURE {
 	byte commstat = 0;
 
 };
+RECEIVE_DATA_STRUCTURE RXData;
+SEND_DATA_STRUCTURE TXData;
 
 // Status codes for comunications
-#define CommInit 50 // Initilize communication on boot
 #define CommOK 55 //Communication OK code
 
 long commstat_val = 0; //Test communication status
@@ -52,9 +52,7 @@ long comminit_val = 0;
 
 byte OutputsState = 0;
 
-
 #define DEBUG 1 //Enable or Disable Debug option
-
 
 // create servo object to control a servo
 Servo Servo1;
@@ -63,32 +61,30 @@ Servo Servo2;
 
 int ledPins[] = { 12, 11, 10, 9, 8, 7, 6, 5 }; // GPIO for diffiren uses (like relay, switches)
 int ledstat;
-
-RECEIVE_DATA_STRUCTURE RXData;
-SEND_DATA_STRUCTURE TXData;
-
-
 // the setup function runs once when you press reset or power the board
 void setup() {
-	
-for (int index = 0; index <= 7; index++) { pinMode(ledPins[index], OUTPUT);} // Define GPIO to OUTPUT mode
-	
-	//Set Servo pin
+
+// Define GPIO to OUTPUT mode	
+	for (int index = 0; index <= 7; index++) { pinMode(ledPins[index], OUTPUT);} 
+//Set Servo pins
 	Servo1.attach(13);
 	Servo2.attach(4);
+	Servo1.write(0);
+	Servo2.write(0);
 	//Servo3.attach(4);
-		
+//Set Serials		
 	Serial.begin(9600);
 	RCSerial.begin(9600);
+	
 	Serial.println("ArduDroid Receiver 0.1");
 	Serial.flush();
-	
+//EasyTransfer settings	
 	ETin.begin(details(RXData), &RCSerial);
 	ETout.begin(details(TXData), &RCSerial);
+	
 	//TXData.commstat = CommInit;
 
-EEPROM.get(5, RXData.keysStat); // Atantion!!!! Only if need reset ID
-
+EEPROM.get(5, RXData.keysStat); 
 }
 
 // the loop function runs over and over again until power down or reset
@@ -97,10 +93,7 @@ void loop() {
 		
 		SetGPIO();
 
-	}
-
-	//Serial.print("OutputsState: "); Serial.println(OutputsState);
-	//Serial.print("RXData.keysStat: "); Serial.println(RXData.keysStat);
+	}	
 	if (ETin.receiveData())  {                      // если пришел пакет   
 		Serial.println(RXData.id);
 		if (RXData.id == 1) { // и совпал id
@@ -112,25 +105,22 @@ void loop() {
 #endif // !DEBUG
 			if (count >= oldCount) {                // если счетчик больше сохраненного   
 				count--;                             // отнимаем 1
-				EEPROM.put(0, count);                // пишим в еепром
+				EEPROM.put(0, count);                //write to eeprom
 			//	Serial.print("count:"); Serial.println(count);
 				Serial.println("Data Recived is correct!!!!");
 				TXData.commstat = CommOK;
-
+//Send Coomunication status every 10 sec
 				if ((millis() - commstat_val) > commstat_check_time) {
 					TXData.commstat = CommOK;
 					commstat_val = millis();
 					Serial.println(TXData.commstat);
 				}
 
-				SetGPIO();
-				SendData();    //Send Data to Remote unit
+				SetGPIO();//Set GPIO function
+				SendData();    //Send Data to Remote unit 
 			//	GetGPIOsat();
-
-			
 			}
-
-}
+			}
 }
 	//else 
 	//	Serial.println("ALARM!!! Received Wrong Data");            // received previus packet
@@ -149,13 +139,10 @@ void loop() {
 	//}
 	}
 
-
 	void SetGPIO() {
-		
 		for (byte n = 0; n <= 7; n++)
 		{
 			//Serial.println(n);
-
 			switch (n) {
 			case 0:
 #ifdef DEBUG
@@ -234,7 +221,6 @@ void loop() {
 		OutputsState = RXData.keysStat;
 		EEPROM.put(5, RXData.keysStat);
 	}
-
 	void GetGPIOsat(){
 		for (byte n1 = 0; n1 <= 7; n1++)
 		{
@@ -252,7 +238,6 @@ void loop() {
 		}
 
 	}
-
 	void SendData() {
 
 		for (byte n1 = 0; n1 <= 5; n1++){

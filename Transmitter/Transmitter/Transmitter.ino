@@ -54,25 +54,30 @@ byte olddigcmd = 0; // Old Digital keys command status
 
 long debounceDelay = 300;    // the debounce time; increase if the output flickers
 long key_Debounce_Time[] = { 0,0,0,0,0,0,0,0 };
+long Trim_debonceDelay = 100;
+long Trim1_Debounce_Time = 0;
+long Trim2_Debounce_Time = 0;
+
+char note2sing[] = {
+	'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H' };
 
 //define where your pins are
 int latchPin = 5; //was 8
 int dataPin = 6; //was9
 int clockPin = 4; //was 7
 
-#define casevalue
+String stCommandStatus = "_ _ _ _ _ _ _ _";
+
+//#define casevalue
 #define CommOK 55 //Communication code status
-char commstat; //Coomunicatiom Status
+String commstat; //Coomunicatiom Status
 #define DEBUG 1
 
-
 byte switchVar1 = 72;  //01001000
-char note2sing[] = {
-	'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H' };
 
-// Set Trimmer Pin
-int Trim1pin = A1;
-int Trim2pin = A2;
+// Set Trimmer Pins
+int Trim1pin = A0;
+int Trim2pin = A1;
 //int Trim3pin = A3;
 
 int Trim1_val;
@@ -83,12 +88,11 @@ byte Trim1_val_status;
 byte Trim2_val_status;
 //byte Trim3_val_status;
 
-
-String inText;
+//String inText;
 ////////////////////////////////////////////////
 
 void setup() {
-	delay(200);
+	//delay(200);
 	RCSerial.begin(9600);
 	Serial.begin(9600);
 	Serial.println("Arduino Transmitter Ver.0.1");
@@ -102,28 +106,27 @@ void setup() {
 	pinMode(clockPin, OUTPUT);
 	pinMode(dataPin, INPUT);
 	//EEPROM.put(5, 32763); // Atantion!!!! Only if need reset ID
-	EEPROM.get(10, TXData.keysStat);
+	EEPROM.get(10, TXData.keysStat);  //Get old status from EEPROM
 	display.begin(SSD1306_SWITCHCAPVCC, 0x3C); //Initial Display
 }
 
 void loop() {
 	//delay(200);
 	if (ETin.receiveData()) {                      // если пришел пакет   
-		Serial.println("Data Received!!!, ID: "); Serial.println(RXData.id);
+		Serial.print("Data Received!!!, ID: "); Serial.println(RXData.id);
 		if (RXData.id == 2) {                       // и совпал id
 			Serial.println("ID Received OK!!! ");
 			EEPROM.get(5, oldcountRX);               // достаем из EEPROM счетчик
 			countRX = k.decrypt(RXData.enc);           // декодируем 
 #ifdef DEBUG
-		//	Serial.println("oldcountRX: "); Serial.println(oldcountRX);
-		//	Serial.println("countRX: "); Serial.println(countRX);
+		//	Serial.print("oldcountRX: "); Serial.println(oldcountRX);
+		//	Serial.print("countRX: "); Serial.println(countRX);
 #endif
 			if (countRX >= oldcountRX) {                // если счетчик больше или равен сохраненного        
 				countRX--;                             // отнимаем 1
 				EEPROM.put(5, countRX);                // пишим в еепром
 				Serial.println("Data Recived is correct!!!!");
-
-			}
+				}
 			else Serial.println("ALARM!!! Received Wrong Data");            // received previus packet
 		}
 	}
@@ -133,10 +136,9 @@ void loop() {
 	digitalWrite(latchPin, 0);
 	switchVar1 = shiftIn(dataPin, clockPin);
 	//Serial.println(switchVar1, BIN);
-	for (int n = 0; n <= 7; n++)
+	for (byte n = 0; n <= 7; n++)
 	{
 		if (switchVar1 & (1 << n)) {
-							
 			if ((millis() - key_Debounce_Time[n]) > debounceDelay) {
 #ifdef DEBUG
 				//Serial.println("Key");
@@ -144,36 +146,45 @@ void loop() {
 #endif
 		//Togle for status
 				TXData.keysStat ^= 1 << n;
+				if (stCommandStatus.charAt(n*2) == char(49+n)) stCommandStatus.setCharAt(n*2, '_');
+				else stCommandStatus.setCharAt(n*2, char(49+n));
 				key_Debounce_Time[n] = millis();
-							}
-						}
-			displaydata();
+			}
 		}
-	//Read Analog Data
-	Trim1_val = analogRead(Trim1pin);
-	TXData.AnalogStat1 = map(Trim1_val, 0, 1023, 0, 179);
-	Trim2_val = analogRead(Trim2pin);
-	TXData.AnalogStat2 = map(Trim2_val, 0, 1023, 0, 179);
+			}
 	
-	if ((olddigcmd != TXData.keysStat)) // || (TXData.AnalogStat1 != Trim1_val_status) || (TXData.AnalogStat2 != Trim2_val_status))
+	//Read Analog Data
+	if ((millis() - Trim1_Debounce_Time) > Trim_debonceDelay) {
+			Trim1_val = analogRead(Trim1pin);
+			TXData.AnalogStat1 = map(Trim1_val, 1023, 0, 0, 254);
+			Trim1_Debounce_Time = millis();
+	}
+	if ((millis() - Trim2_Debounce_Time) > Trim_debonceDelay) {
+		Trim2_val = analogRead(Trim2pin);
+		TXData.AnalogStat2 = map(Trim2_val, 1023, 0, 0, 254);
+		Trim2_Debounce_Time = millis();
+	}
+	
+
+
+	if ((olddigcmd != TXData.keysStat) || 
+		((Trim1_val_status >= TXData.AnalogStat1 + 2) || (Trim1_val_status <= TXData.AnalogStat1 - 2)) || 
+		((Trim2_val_status >= TXData.AnalogStat2 + 2) || (Trim2_val_status <= TXData.AnalogStat2 - 2)))
 	{
-		Serial.print("OLDCommand"); Serial.println(olddigcmd, BIN);
-		Serial.print("TXData.keystatus"); Serial.println(TXData.keysStat, BIN);
-		//Serial.print("RXData.outState"); Serial.println(RXData.outState, BIN);
-
-		if (RXData.commstat == CommOK)
-			commstat = 'OK';
-		else  commstat = 'Err';
-
-
-		SendData(); //Send Data to Remote unit
+		//Serial.print("OLDCommand"); Serial.println(olddigcmd, BIN);
+		//Serial.print("TXData.keystatus"); Serial.println(TXData.keysStat, BIN);
+		Serial.print("Trim1:  "); Serial.println(TXData.AnalogStat1);
+		Serial.print("Trim2:  "); Serial.println(TXData.AnalogStat2);
+		
+	SendData(); //Send Data to Remote unit
 		olddigcmd = TXData.keysStat;
 		EEPROM.put(10, TXData.keysStat);
-		TXData.AnalogStat1 = Trim1_val_status;
-		TXData.AnalogStat2 = Trim2_val_status;
-
+		Trim1_val_status = TXData.AnalogStat1;
+		Trim2_val_status = TXData.AnalogStat2;
 	}
-
+	//Update Communication status on Display
+	displaydata(); //Display
+	
 	}
 
 	void SendData() {	
@@ -214,17 +225,22 @@ byte shiftIn(int TXDataPin, int myClockPin) {
 }
 
 void displaydata() {
-	
+	if (RXData.commstat == CommOK)
+	 commstat = "OK";
+	else 
+		 commstat = "Error";
 	display.clearDisplay();
 	display.setTextColor(WHITE);
 	display.setTextSize(1.1);
 	display.setCursor(0, 0);
-	display.println("Communication:");
-	display.setCursor(95, 0);
+	display.println("Network: ");
+	display.setCursor(80, 0);
 	display.println(commstat);
-	//display.setCursor(0, 10);
-	//display.setCursor(65, 10);
-	//display.println("mW");
+	display.setCursor(0, 10);
+	display.println("I/O:");
+	display.setCursor(30, 10);
+	display.println(stCommandStatus);
+		
 	//display.setCursor(0, 20);
 	//display.println(energy);
 	//display.setCursor(65, 20);
