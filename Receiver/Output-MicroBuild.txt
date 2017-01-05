@@ -1,0 +1,9 @@
+﻿Visual Micro free version. CTRL+click for secure purchase http://www.visualmicro.com/page/shop.aspx
+
+Compiling 'Receiver' for 'Arduino Nano w/ ATmega328'
+
+Program size: 7,292 bytes (used 24% of a 30,720 byte maximum) (6.06 secs)
+Minimum Memory Usage: 609 bytes (30% of a 2048 byte maximum)
+ 
+Uploading 'Receiver' to 'Arduino Nano w/ ATmega328' using 'COM9'
+	The upload process has finished.
