@@ -2,8 +2,8 @@
 
 Compiling 'Transmitter' for 'Arduino Nano w/ ATmega328'
 
-Program size: 17,718 bytes (used 58% of a 30,720 byte maximum) (33.13 secs)
-Minimum Memory Usage: 1493 bytes (73% of a 2048 byte maximum)
+Program size: 16,736 bytes (used 54% of a 30,720 byte maximum) (15.91 secs)
+Minimum Memory Usage: 1412 bytes (69% of a 2048 byte maximum)
  
 Uploading 'Transmitter' to 'Arduino Nano w/ ATmega328' using 'COM6'
 	The upload process has finished.
