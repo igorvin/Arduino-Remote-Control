@@ -1,36 +1,38 @@
+
 ##Remote control system based on Arduino and HC-12 long range module
 
-I created this project to help my friend extend existing remote control system and add additional commands to his project.
-This project contains two separeted projects Transmitter and Receiver.
-
-Both was created on Microsoft Visual Studio.
-
-Arduino files you can find by the following links:
-
-Transmitter: https://github.com/igorvin/Arduino-Remote-Control/blob/master/Transmitter/Transmitter/Transmitter.ino
-
-Receiver: https://github.com/igorvin/Arduino-Remote-Control/blob/master/Receiver/Receiver/Receiver.ino
-
-The project was created and tested on Arduino version 1.6.6
+I created this project to help my friend extend existing remote control system and add additional commands to his project.<br />
+This project contains two separated projects Transmitter and Receiver.
+Both was created on Microsoft Visual Studio.<br />
+Arduino files you can find by the following links:<br />
+Transmitter: https://github.com/igorvin/Arduino-Remote-Control/blob/master/Transmitter/Transmitter/Transmitter.ino<br />
+Receiver: https://github.com/igorvin/Arduino-Remote-Control/blob/master/Receiver/Receiver/Receiver.ino<br />
+The project was created and tested on Arduino version 1.6.6<br />
 
 ##Specifications
 
-Transmitter:
-To be continue.....
+**Libraries:**<br />
+		**EEPROM**- Built in Arduino library. Ability to write to Eeprom memory<br />
+		**Servo**-  Built in Arduino library. Enable Servo motors<br />
+		**SoftwareSerial**- Built in Arduino library. Enable software serial for HC-12 module<br />
+		**EasyTransfer**-[http://www.billporter.info/2011/05/30/easytransfer-arduino-library/](http://www.billporter.info/2011/05/30/easytransfer-arduino-library/"). Easy transfer data between two arduino
+		
 
-##Receiver:
+###Transmitter:
+**Hardware:**<br />
+**---Arduino Nano**<br />
+**---HC-12 433 MHz**<br />
+
+To be continue.....
+![alt tag](https://github.com/igorvin/Arduino-Remote-Control/blob/master/Fritzing/Transmitter.png)
+
+###Receiver:
+
+**Hardware:**<br />
 
 ![alt tag](https://github.com/igorvin/Arduino-Remote-Control/blob/master/Fritzing/Receiver.png)
 
 
-## Drow diagrams
-
-![alt tag](https://raw.githubusercontent.com/username/projectname/branch/path/to/img.png)
-
-Show what the library does as concisely as possible, developers should be able to figure out how your project solves their problem by looking at the code example. Make sure the API you are showing off is obvious, and that your code is short and concise.
-
-##Specifications
-#--Transmitter--
 
 ## Installation
 
