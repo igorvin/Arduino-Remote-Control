@@ -10,16 +10,11 @@
 #include <EEPROM.h>
 #include <Servo.h>
 #include <SoftwareSerial.h>
-//#include <Keeloq.h>
 #include <EasyTransfer.h>
 
 //Define Serial port pins
 SoftwareSerial RCSerial(2, 3); // RX, TX
 
-//Keeloq k(0x01325324, 0x05064718);        /// Encryption Key
-//unsigned int oldCount = 65535;
-//unsigned int count; 
-//unsigned int countTX = 75535; //ID sent to transmitter
 
 EasyTransfer ETin, ETout;
 struct RECEIVE_DATA_STRUCTURE {
