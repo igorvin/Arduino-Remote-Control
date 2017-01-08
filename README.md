@@ -20,8 +20,9 @@ The project was created and tested on Arduino version 1.6.6<br />
 
 ###Transmitter:
 **Hardware:**<br />
-**---Arduino Nano**<br />
-**---HC-12 433 MHz**<br />
+**---Arduino Nano--**<br />
+**---HC-12 433 MHz--**<br />
+**---OLED Display--**<br />
 
 To be continue.....
 ![alt tag](https://github.com/igorvin/Arduino-Remote-Control/blob/master/Fritzing/Transmitter.png)
