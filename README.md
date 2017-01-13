@@ -2,6 +2,9 @@
 ##Remote control system based on Arduino and HC-12 long range module
 
 I created this project to help my friend extend existing remote control system and add additional commands to his project.<br />
+
+I want to say BIG thanks to Gregory Gonorovsky for help with creating and debugging the code <br />.
+
 This project contains two parts: [Transmitter](https://github.com/igorvin/Arduino-Remote-Control/blob/master/Transmitter/Transmitter/Transmitter.ino) and [Receiver](https://github.com/igorvin/Arduino-Remote-Control/blob/master/Receiver/Receiver/Receiver.ino).<br />
 Both was created with Microsoft Visual Studio.<br />
 The project was created and tested on Arduino version 1.6.6<br />
