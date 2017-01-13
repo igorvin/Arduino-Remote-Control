@@ -2,11 +2,8 @@
 ##Remote control system based on Arduino and HC-12 long range module
 
 I created this project to help my friend extend existing remote control system and add additional commands to his project.<br />
-This project contains two separated projects Transmitter and Receiver.
-Both was created on Microsoft Visual Studio.<br />
-Arduino files you can find by the following links:<br />
-Transmitter: https://github.com/igorvin/Arduino-Remote-Control/blob/master/Transmitter/Transmitter/Transmitter.ino<br />
-Receiver: https://github.com/igorvin/Arduino-Remote-Control/blob/master/Receiver/Receiver/Receiver.ino<br />
+This project contains two parts: [Transmitter](https://github.com/igorvin/Arduino-Remote-Control/blob/master/Transmitter/Transmitter/Transmitter.ino) and [Receiver](https://github.com/igorvin/Arduino-Remote-Control/blob/master/Receiver/Receiver/Receiver.ino).<br />
+Both was created with Microsoft Visual Studio.<br />
 The project was created and tested on Arduino version 1.6.6<br />
 
 ##Specifications
@@ -15,7 +12,7 @@ The project was created and tested on Arduino version 1.6.6<br />
 		**EEPROM**- Built in Arduino library. Ability to write to Eeprom memory<br />
 		**Servo**-  Built in Arduino library. Enable Servo motors<br />
 		**SoftwareSerial**- Built in Arduino library. Enable software serial for HC-12 module<br />
-		**EasyTransfer**-[http://www.billporter.info/2011/05/30/easytransfer-arduino-library/](http://www.billporter.info/2011/05/30/easytransfer-arduino-library/"). Easy transfer data between two arduino
+		**EasyTransfer**- [Easy transfer data between two arduino](http://www.billporter.info/2011/05/30/easytransfer-arduino-library/)
 
 ###Functionality:
 - Remote control long range, up to 2km<br />
@@ -49,7 +46,10 @@ The project was created and tested on Arduino version 1.6.6<br />
 
 
 
-## Installation
+### Configuration
 
-Provide code examples and explanations of how to get the project.
+Before start using HC-12 modules I strongly recommend configure those modules.
+How to do that you can find very good explanation in the following link:<br />
+[HC-12 Configuration](http://www.instructables.com/id/Long-Range-18km-Arduino-to-Arduino-Wireless-Commun/step2/Wiring-and-setup/)<br />
+Or additionally you can try this utility: [https://github.com/robert-rozee/HC-12-config](https://github.com/robert-rozee/HC-12-config)<br />
 
