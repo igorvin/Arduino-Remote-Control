@@ -1,9 +1,3 @@
 ﻿Visual Micro free version. CTRL+click for secure purchase http://www.visualmicro.com/page/shop.aspx
 
 Compiling 'Transmitter' for 'Arduino Nano w/ ATmega328'
-
-Program size: 16,736 bytes (used 54% of a 30,720 byte maximum) (15.91 secs)
-Minimum Memory Usage: 1412 bytes (69% of a 2048 byte maximum)
- 
-Uploading 'Transmitter' to 'Arduino Nano w/ ATmega328' using 'COM6'
-	The upload process has finished.

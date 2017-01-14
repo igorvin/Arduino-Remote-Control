@@ -5,6 +5,8 @@
 //*****
 
 //Include the necessary libraries
+#include <gfxfont.h>
+#include <Adafruit_GFX.h>
 #include <EEPROM.h>
 #include <SoftwareSerial.h>
 #include <EasyTransfer.h>
@@ -64,9 +66,15 @@ int clockPin = 4; //was 7
 
 String stCommandStatus = "_ _ _ _ _ _ _ _";
 
+static const unsigned char PROGMEM signal_OK[] = {
+	0x00, 0x00, 0x00, 0x02, 0x00, 0x06, 0x00, 0x0E, 0x00, 0x2E, 0x02, 0x6E, 0x26, 0xEE, 0x6E, 0xEE,
+	0xEE, 0xEE,
+};
+
 //#define casevalue
 #define CommOK 55 //Communication code status
 String commstat; //Coomunicatiom Status
+String ver = "1.0"; //Version
 #define DEBUG 1
 
 
@@ -92,7 +100,7 @@ void setup() {
 	//delay(200);
 	RCSerial.begin(9600);
 	Serial.begin(9600);
-	Serial.println("Arduino Transmitter Ver.0.1");
+	Serial.print("Arduino Transmitter Ver:"); Serial.println(ver);
 	RCSerial.flush();
 
 	ETout.begin(details(TXData), &RCSerial);
@@ -219,25 +227,29 @@ byte shiftIn(int TXDataPin, int myClockPin) {
 }
 
 void displaydata() {
-	if (RXData.commstat == CommOK)
-		commstat = "OK";
-	else
-		commstat = "Error";
+	
+	
 	display.clearDisplay();
 	display.setTextColor(WHITE);
 	display.setTextSize(1.1);
 	display.setCursor(0, 0);
 	display.println("Network: ");
 	display.setCursor(80, 0);
-	display.println(commstat);
+	if (RXData.commstat == CommOK) {
+		display.drawBitmap(100, 0, signal_OK, 16, 9, 1);
+	}
+	else {
+		display.println("Error");
+		}
 	display.setCursor(0, 10);
 	display.println("KEY:");
 	display.setCursor(30, 10);
 	display.println(stCommandStatus);
-
-	//display.setCursor(0, 20);
-	//display.println(energy);
-	//display.setCursor(65, 20);
+	display.setCursor(80, 25);
+	display.setTextSize(1);
+	display.println("Ver: ");
+	display.setCursor(105, 25);
+	display.println(ver);
 	//display.println("mWh");
 	display.display();
 }
